@@ -9,8 +9,15 @@
 #define WMAIN_H_
 
 #include <QtWidgets>
+#include <QSerialPort>
+#include <QDir>
+#include <iostream>
 #include "ui_mainPage.h"
 #include "gui/gui.h"
+#include <unistd.h>
+#include <fcntl.h>
+//#include "stdio.h"
+//#include "stdlib.h"
 
 /**
  * Page to select the tool
@@ -24,6 +31,7 @@ public:
 private:
 	Ui::mainPage *mUi;
 	uint8_t m_move;
+	void get_arduino_device(std::string& device);
 
 private slots:
 	void clicked_pb_move_steps();

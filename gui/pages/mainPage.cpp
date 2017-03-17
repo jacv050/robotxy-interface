@@ -17,6 +17,18 @@ mUi(new Ui::mainPage){
 	connect(mUi->rb_down, SIGNAL(clicked()), this, SLOT(clicked_radio_button()));
 	connect(mUi->rb_left, SIGNAL(clicked()), this, SLOT(clicked_radio_button()));
 	connect(mUi->rb_right, SIGNAL(clicked()), this, SLOT(clicked_radio_button()));
+
+	std::string prueba;
+	get_arduino_device(prueba);
+}
+
+void mainPage::get_arduino_device(std::string& device){
+	QDir dir("/dev/");
+	dir.setFilter(QDir::System);
+	QStringList list = dir.entryList();
+	QString ttyacm0 = list.filter(QString("ttyACM")).at(0);
+	device = "/dev/";
+	device.append(ttyacm0.toLocal8Bit().constData());
 }
 
 void mainPage::clicked_radio_button(){
@@ -37,25 +49,45 @@ void mainPage::clicked_radio_button(){
 }
 
 void mainPage::clicked_pb_move_steps(){
+	std::string device="";
+	get_arduino_device(device);
+
 	uint8_t data[4];
 	data[0] = m_move;
-	data[1] = 4;//Tipo de movimiento m_type
+	data[1] = 4;//Tipo de movimiento m_type 4
 	data[2] = (mUi->sb_steps->value()>>8);//Primera parte de m_steps
 	data[3] = (mUi->sb_steps->value() & 0x00FF);//Segundoa parte de m_steps
 
-	std::string message;
+	//Opcion qt
+	QByteArray byteArray((char*)data, 4);
+	QSerialPort serial;
+	serial.setPortName(QString(device.c_str()));
+	serial.setBaudRate(QSerialPort::Baud9600);
+	serial.setDataBits(QSerialPort::Data8);
+	serial.setParity(QSerialPort::NoParity);
+	serial.setStopBits(QSerialPort::OneStop);
+	serial.setFlowControl(QSerialPort::NoFlowControl);
 	
-	message.append("echo '");
-	message.append((char*)data, 4);
-	message.append("'");
-	message.append(" >> /dev/ttyACM0");
-	system(message.c_str());
+	if(serial.open(QIODevice::ReadWrite)){
+		if(serial.isWritable()){
+	        	serial.waitForBytesWritten(-1);
+	        	serial.write(byteArray);
+	        	serial.flush(); // Port Error 12 (timed out???)
+	        	serial.close();
+		}
+	}
+
+	//Opcion a bajo nivel - Funcional
+	//int desc = open(device.c_str(), O_RDWR | O_NOCTTY | O_NDELAY);
+	//write(desc, data, 4);
+	//close(desc);
+
 }
 
 void mainPage::clicked_pb_move_meters(){
         uint8_t data[4];
         std::string message;
-
+	//m_type 5
         message.append("echo '");
         message.append((char*)data, 4);
         message.append("'");
