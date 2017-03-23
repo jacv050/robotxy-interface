@@ -14,6 +14,7 @@
 #include <iostream>
 #include "ui_mainPage.h"
 #include "gui/gui.h"
+#include "../comm/messages.h"
 #include <unistd.h>
 #include <fcntl.h>
 //#include "stdio.h"

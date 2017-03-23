@@ -17,9 +17,6 @@ mUi(new Ui::mainPage){
 	connect(mUi->rb_down, SIGNAL(clicked()), this, SLOT(clicked_radio_button()));
 	connect(mUi->rb_left, SIGNAL(clicked()), this, SLOT(clicked_radio_button()));
 	connect(mUi->rb_right, SIGNAL(clicked()), this, SLOT(clicked_radio_button()));
-
-	std::string prueba;
-	get_arduino_device(prueba);
 }
 
 void mainPage::get_arduino_device(std::string& device){
@@ -85,15 +82,33 @@ void mainPage::clicked_pb_move_steps(){
 }
 
 void mainPage::clicked_pb_move_meters(){
-        uint8_t data[4];
-        std::string message;
-	//m_type 5
-        message.append("echo '");
-        message.append((char*)data, 4);
-        message.append("'");
-        message.append(" >> /dev/ttyACM0");
-        system(message.c_str());
+	std::string device="";
+	get_arduino_device(device);
 
+        uint8_t data[4];
+	data[0] = m_move;
+	data[1] = 5;//Tipo de movimiento centimetros 5
+	data[2] = (mUi->sb_meters->value()>>8);
+	data[3] = (mUi->sb_meters->value() & 0x00FF);
+
+	//Opcion qt
+	QByteArray byteArray((char*)data, 4);
+	QSerialPort serial;
+	serial.setPortName(QString(device.c_str()));
+	serial.setBaudRate(QSerialPort::Baud9600);
+	serial.setDataBits(QSerialPort::Data8);
+	serial.setParity(QSerialPort::NoParity);
+	serial.setStopBits(QSerialPort::OneStop);
+	serial.setFlowControl(QSerialPort::NoFlowControl);
+	
+	if(serial.open(QIODevice::ReadWrite)){
+		if(serial.isWritable()){
+	        	serial.waitForBytesWritten(-1);
+	        	serial.write(byteArray);
+	        	serial.flush(); // Port Error 12 (timed out???)
+	        	serial.close();
+		}
+	}
 }
 
 mainPage::~mainPage(){

@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>404</width>
-    <height>108</height>
+    <height>132</height>
    </rect>
   </property>
   <property name="minimumSize">
@@ -48,7 +48,7 @@
     </rect>
    </property>
    <property name="text">
-    <string>Mover metros</string>
+    <string>Mover mm</string>
    </property>
   </widget>
   <widget class="QSpinBox" name="sb_steps">
@@ -127,6 +127,25 @@
    </property>
    <property name="text">
     <string>Derecha</string>
+   </property>
+  </widget>
+  <widget class="QLabel" name="lb_output">
+   <property name="geometry">
+    <rect>
+     <x>30</x>
+     <y>80</y>
+     <width>331</width>
+     <height>51</height>
+    </rect>
+   </property>
+   <property name="minimumSize">
+    <size>
+     <width>331</width>
+     <height>51</height>
+    </size>
+   </property>
+   <property name="text">
+    <string/>
    </property>
   </widget>
  </widget>
