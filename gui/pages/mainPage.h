@@ -14,7 +14,7 @@
 #include <iostream>
 #include "ui_mainPage.h"
 #include "gui/gui.h"
-#include "../comm/messages.h"
+#include "gui/comm/messages.h"
 #include <unistd.h>
 #include <fcntl.h>
 //#include "stdio.h"
@@ -30,6 +30,7 @@ public:
 	virtual ~mainPage();
 
 private:
+	Messages messages;
 	Ui::mainPage *mUi;
 	uint8_t m_move;
 	void get_arduino_device(std::string& device);

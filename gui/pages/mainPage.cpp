@@ -9,6 +9,7 @@
 
 mainPage::mainPage(QWidget* parent) :
 QWidget(parent),
+messages(),
 mUi(new Ui::mainPage){
 	mUi->setupUi(this);
 	connect(mUi->pb_move_steps, SIGNAL(clicked()), this, SLOT(clicked_pb_move_steps()));
@@ -17,6 +18,7 @@ mUi(new Ui::mainPage){
 	connect(mUi->rb_down, SIGNAL(clicked()), this, SLOT(clicked_radio_button()));
 	connect(mUi->rb_left, SIGNAL(clicked()), this, SLOT(clicked_radio_button()));
 	connect(mUi->rb_right, SIGNAL(clicked()), this, SLOT(clicked_radio_button()));
+	messages.start();
 }
 
 void mainPage::get_arduino_device(std::string& device){
@@ -46,9 +48,6 @@ void mainPage::clicked_radio_button(){
 }
 
 void mainPage::clicked_pb_move_steps(){
-	std::string device="";
-	get_arduino_device(device);
-
 	uint8_t data[4];
 	data[0] = m_move;
 	data[1] = 4;//Tipo de movimiento m_type 4
@@ -57,34 +56,11 @@ void mainPage::clicked_pb_move_steps(){
 
 	//Opcion qt
 	QByteArray byteArray((char*)data, 4);
-	QSerialPort serial;
-	serial.setPortName(QString(device.c_str()));
-	serial.setBaudRate(QSerialPort::Baud9600);
-	serial.setDataBits(QSerialPort::Data8);
-	serial.setParity(QSerialPort::NoParity);
-	serial.setStopBits(QSerialPort::OneStop);
-	serial.setFlowControl(QSerialPort::NoFlowControl);
-	
-	if(serial.open(QIODevice::ReadWrite)){
-		if(serial.isWritable()){
-	        	serial.waitForBytesWritten(-1);
-	        	serial.write(byteArray);
-	        	serial.flush(); // Port Error 12 (timed out???)
-	        	serial.close();
-		}
-	}
-
-	//Opcion a bajo nivel - Funcional
-	//int desc = open(device.c_str(), O_RDWR | O_NOCTTY | O_NDELAY);
-	//write(desc, data, 4);
-	//close(desc);
+	messages.writeMessage(byteArray);
 
 }
 
 void mainPage::clicked_pb_move_meters(){
-	std::string device="";
-	get_arduino_device(device);
-
         uint8_t data[4];
 	data[0] = m_move;
 	data[1] = 5;//Tipo de movimiento centimetros 5
@@ -93,22 +69,7 @@ void mainPage::clicked_pb_move_meters(){
 
 	//Opcion qt
 	QByteArray byteArray((char*)data, 4);
-	QSerialPort serial;
-	serial.setPortName(QString(device.c_str()));
-	serial.setBaudRate(QSerialPort::Baud9600);
-	serial.setDataBits(QSerialPort::Data8);
-	serial.setParity(QSerialPort::NoParity);
-	serial.setStopBits(QSerialPort::OneStop);
-	serial.setFlowControl(QSerialPort::NoFlowControl);
-	
-	if(serial.open(QIODevice::ReadWrite)){
-		if(serial.isWritable()){
-	        	serial.waitForBytesWritten(-1);
-	        	serial.write(byteArray);
-	        	serial.flush(); // Port Error 12 (timed out???)
-	        	serial.close();
-		}
-	}
+	messages.writeMessage(byteArray);
 }
 
 mainPage::~mainPage(){

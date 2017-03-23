@@ -15,6 +15,9 @@ FILE(GLOB GUISOURCES "gui/*.cpp")
 FILE(GLOB GUIPAGESHEADERS "gui/pages/*.h*")
 FILE(GLOB GUIPAGESSOURCES "gui/pages/*.cpp")
 
+FILE(GLOB GUICOMMHEADERS "gui/comm/*.h")
+FILE(GLOB GUICOMMSOURCES "gui/comm/*.cpp")
+
 #Find QT
 set(CMAKE_AUTOUIC ON)
 set(CMAKE_AUTOMOC ON)
@@ -23,6 +26,6 @@ find_package(Qt5Core)
 find_package(Qt5Widgets)
 find_package(Qt5SerialPort)
 
-add_executable( main ${GUISOURCES} ${GUIHEADERS} ${GUIPAGESHEADERS} ${GUIPAGESSOURCES} )
+add_executable( main ${GUISOURCES} ${GUIHEADERS} ${GUIPAGESHEADERS} ${GUIPAGESSOURCES} ${GUICOMMHEADERS} ${GUICOMMSOURCES})
 target_link_libraries( main Qt5::Widgets Qt5::Core Qt5::SerialPort)
 
